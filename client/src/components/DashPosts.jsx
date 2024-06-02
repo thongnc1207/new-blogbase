@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
+import { getStorage, ref, deleteObject } from "firebase/storage";
+import { app } from '../firebase';
 import { set } from 'mongoose';
 
 export default function DashPosts() {
@@ -11,6 +13,8 @@ export default function DashPosts() {
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [postIdToDelete, setPostIdToDelete] = useState('');
+  const [postImageToDelete, setPostImageToDelete] = useState('');
+  const storage = getStorage(app);
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -65,6 +69,14 @@ export default function DashPosts() {
         setUserPosts((prev) =>
           prev.filter((post) => post._id !== postIdToDelete)
         );
+        const desertRef = ref(storage, postImageToDelete);
+        deleteObject(desertRef).then(() => {
+          // File deleted successfully
+          console.log('deleted')
+        }).catch((error) => {
+          // Uh-oh, an error occurred!
+          console.log('fail'+error.message)
+        });
       }
     } catch (error) {
       console.log(error.message);
@@ -95,7 +107,7 @@ export default function DashPosts() {
                   <Table.Cell>
                     <Link to={`/post/${post.slug}`}>
                       <img
-                        src={post.image}
+                        src={post.image[0]}
                         alt={post.title}
                         className='w-20 h-10 object-cover bg-gray-500'
                       />
@@ -115,6 +127,7 @@ export default function DashPosts() {
                       onClick={() => {
                         setShowModal(true);
                         setPostIdToDelete(post._id);
+                        setPostImageToDelete(post.image);
                       }}
                       className='font-medium text-red-500 hover:underline cursor-pointer'
                     >

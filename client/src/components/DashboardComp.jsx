@@ -194,7 +194,7 @@ export default function DashboardComp() {
                   <Table.Row className='bg-white dark:border-gray-700 dark:bg-gray-800'>
                     <Table.Cell>
                       <img
-                        src={post.image}
+                        src={post.image[0]}
                         alt='user'
                         className='w-14 h-10 rounded-md bg-gray-500'
                       />

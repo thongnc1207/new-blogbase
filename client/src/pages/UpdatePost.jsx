@@ -15,12 +15,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 export default function UpdatePost() {
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState(null);
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
   const [imageUploadError, setImageUploadError] = useState(null);
   const [formData, setFormData] = useState({});
   const [publishError, setPublishError] = useState(null);
   const { postId } = useParams();
+  const imageUrls = []
 
   const navigate = useNavigate();
     const { currentUser } = useSelector((state) => state.user);
@@ -49,38 +50,43 @@ export default function UpdatePost() {
 
   const handleUpdloadImage = async () => {
     try {
-      if (!file) {
+      if (!files[0]) {
         setImageUploadError('Please select an image');
         return;
       }
       setImageUploadError(null);
       const storage = getStorage(app);
-      const fileName = new Date().getTime() + '-' + file.name;
-      const storageRef = ref(storage, fileName);
-      const uploadTask = uploadBytesResumable(storageRef, file);
-      uploadTask.on(
-        'state_changed',
-        (snapshot) => {
-          const progress =
+      for (let i = 0; i < files.length; i++) {
+        const fileName = new Date().getTime() + "-" + files[i].name;
+        const storageRef = ref(storage, fileName);
+        const uploadTask = uploadBytesResumable(storageRef, files[i]);
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           setImageUploadProgress(progress.toFixed(0));
-        },
-        (error) => {
-          setImageUploadError('Image upload failed');
-          setImageUploadProgress(null);
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          },
+          (error) => {
+            setImageUploadError("Image upload failed");
             setImageUploadProgress(null);
-            setImageUploadError(null);
-            setFormData({ ...formData, image: downloadURL });
-          });
-        }
-      );
+            console.log("1")
+          },
+          () => {
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+              setImageUploadProgress(null);
+              setImageUploadError(null);
+              imageUrls.push(downloadURL)
+              setFormData({ ...formData, image: imageUrls });
+            });
+          }
+        );
+      }
     } catch (error) {
       setImageUploadError('Image upload failed');
       setImageUploadProgress(null);
       console.log(error);
+      onsole.log("2")
     }
   };
   const handleSubmit = async (e) => {
@@ -137,9 +143,11 @@ export default function UpdatePost() {
         </div>
         <div className='flex gap-4 items-center justify-between border-4 border-teal-500 border-dotted p-3'>
           <FileInput
+          multiple
             type='file'
             accept='image/*'
-            onChange={(e) => setFile(e.target.files[0])}
+            helperText="SVG, PNG, JPG or GIF (MAX. 800x400px)."
+            onChange={(e) => setFiles(e.target.files)}
           />
           <Button
             type='button'
@@ -162,13 +170,14 @@ export default function UpdatePost() {
           </Button>
         </div>
         {imageUploadError && <Alert color='failure'>{imageUploadError}</Alert>}
-        {formData.image && (
-          <img
-            src={formData.image}
-            alt='upload'
-            className='w-full h-72 object-cover'
-          />
-        )}
+        {formData.image && formData.image.map((url, index) => (
+            <img
+              key={index}
+              src={url}
+              alt="upload"
+              className="w-full h-72 object-cover"
+            />
+          ))}
         <ReactQuill
           theme='snow'
           value={formData.content}
