@@ -69,14 +69,18 @@ export default function DashPosts() {
         setUserPosts((prev) =>
           prev.filter((post) => post._id !== postIdToDelete)
         );
-        const desertRef = ref(storage, postImageToDelete);
-        deleteObject(desertRef).then(() => {
-          // File deleted successfully
-          console.log('deleted')
-        }).catch((error) => {
-          // Uh-oh, an error occurred!
-          console.log('fail'+error.message)
-        });
+        for (let i = 0; i < postImageToDelete.length; i++) {
+          const desertRef = ref(storage, postImageToDelete[i]);
+          deleteObject(desertRef)
+            .then(() => {
+              // File deleted successfully
+              console.log("deleted");
+            })
+            .catch((error) => {
+              // Uh-oh, an error occurred!
+              console.log("fail" + error.message);
+            });
+        }
       }
     } catch (error) {
       console.log(error.message);
