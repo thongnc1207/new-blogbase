@@ -131,3 +131,38 @@ export const getUser = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getFavorite = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) {
+      return next(errorHandler(404, 'User not found'));
+    }
+    const { favorite, ...rest } = user._doc;
+    res.status(200).json(favorite);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const addFavorite = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return next(errorHandler(404, 'User not found'));
+    }
+    const postIndex = user.favorite.indexOf(req.params.postId);
+    if (postIndex === -1) {
+      
+      user.favorite.push(req.params.postId);
+    } else {
+      
+      user.favorite.splice(postIndex, 1);
+    }
+    await user.save();
+    const { password, ...rest } = user._doc;
+    res.status(200).json(rest);
+  } catch (error) {
+    next(error);
+  }
+};

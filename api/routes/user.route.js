@@ -6,6 +6,8 @@ import {
   signout,
   test,
   updateUser,
+  getFavorite,
+  addFavorite
 } from '../controllers/user.controller.js';
 import { verifyToken } from '../utils/verifyUser.js';
 
@@ -17,5 +19,7 @@ router.delete('/delete/:userId', verifyToken, deleteUser);
 router.post('/signout', signout);
 router.get('/getusers', verifyToken, getUsers);
 router.get('/:userId', getUser);
+router.get('/favorite/:userId', getFavorite);
+router.put('/save/:postId', verifyToken, addFavorite);
 
 export default router;

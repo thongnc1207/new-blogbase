@@ -7,6 +7,7 @@ import {
   HiAnnotation,
   HiChartPie,
 } from 'react-icons/hi';
+import { GoStar } from "react-icons/go";
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { signoutSuccess } from '../redux/user/userSlice';
@@ -64,6 +65,17 @@ export default function DashSidebar() {
               as='div'
             >
               Profile
+            </Sidebar.Item>
+          </Link>
+          <Link to='/dashboard?tab=favorite'>
+            <Sidebar.Item
+              active={tab === 'favorite'}
+              icon={GoStar}
+              
+              labelColor='dark'
+              as='div'
+            >
+              Favorite
             </Sidebar.Item>
           </Link>
           {currentUser.isAdmin && (
