@@ -7,6 +7,8 @@ import postRoutes from './routes/post.route.js';
 import commentRoutes from './routes/comment.route.js';
 import cookieParser from 'cookie-parser';
 import path from 'path';
+import http from 'http';
+import https from 'https';
 
 dotenv.config();
 
@@ -25,7 +27,21 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+app.get('/image-proxy', (req, res) => {
+  const { url } = req.query; // Expecting the image URL to be passed as a query parameter
 
+  if (!url) {
+    return res.status(400).send('URL query parameter is required');
+  }
+
+  const client = url.startsWith('https') ? https : http;
+
+  client.get(url, (imageRes) => {
+    imageRes.pipe(res);
+  }).on('error', (err) => {
+    res.status(500).send('Error fetching the image');
+  });
+});
 app.listen(3000, () => {
   console.log('Server is running on port 3000!');
 });

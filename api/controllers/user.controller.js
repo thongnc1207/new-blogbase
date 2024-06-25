@@ -1,6 +1,7 @@
 import bcryptjs from 'bcryptjs';
 import { errorHandler } from '../utils/error.js';
 import User from '../models/user.model.js';
+import Post from '../models/post.model.js';
 
 export const test = (req, res) => {
   res.json({ message: 'API is working!' });
@@ -139,7 +140,8 @@ export const getFavorite = async (req, res, next) => {
       return next(errorHandler(404, 'User not found'));
     }
     const { favorite, ...rest } = user._doc;
-    res.status(200).json(favorite);
+    const savePosts = await Post.find({_id: { $in : favorite}})
+    res.status(200).json(savePosts);
   } catch (error) {
     next(error);
   }
