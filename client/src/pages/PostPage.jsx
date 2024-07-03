@@ -22,6 +22,7 @@ export default function PostPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
   const [post, setPost] = useState(null);
+  const [postUser, setPostUser] = useState(null);
   const [recentPosts, setRecentPosts] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
   const dispatch = useDispatch();
@@ -43,6 +44,11 @@ export default function PostPage() {
         }
         if (res.ok) {
           setPost(data.posts[0]);
+          const ress = await fetch(`/api/user/${data.posts[0].userId}`);
+        const dataa = await ress.json();
+        if (ress.ok) {
+          setPostUser(dataa);
+        }
           setPostLoading(false);
           setError(false);
         }
@@ -68,6 +74,28 @@ export default function PostPage() {
       console.log(error.message);
     }
   }, []);
+
+  // useEffect(() => {
+  //   const getUser = async () => {
+  //     try {
+  //       console.log('inside getUser: ', post.userId);
+  //       const res = await fetch(`/api/user/${post.userId}`);
+  //       const data = await res.json();
+  //       console.log('inside getUser: ', data);
+  //       if (res.ok) {
+  //         setPostUser(data);
+  //       }
+  //     } catch (error) {
+  //       console.log('getUser error: ', error.message);
+  //     }
+  //   };
+
+  //   console.log('trigger useEffect post: ', post);
+  //   if (post && post.userId) {
+  //     console.log('hey: ');
+  //     getUser();
+  //   }
+  // }, [post]);
 
   useEffect(() => {
     if (post != null) {
@@ -182,32 +210,37 @@ export default function PostPage() {
           )
         )}
 
-        <div className="flex p-3 border-b border-slate-500 mx-auto w-full max-w-3xl text-xl">
-          {currentUser ? (
-            <div className="flex items-center gap-1 text-gray-500 text-xl">
-              <img
-                className="h-7 w-7 object-cover rounded-full"
-                src={currentUser.profilePicture}
-                alt=""
-              />
-              <Link
-                to={"/dashboard?tab=profile"}
-                className="text-xl text-cyan-600 hover:underline"
-              >
-                @{currentUser.username}
-              </Link>
-            </div>
-          ) : (
-            <></>
-          )}
-          <span className="ml-3">
+        <div className="flex pt-10 pb-3 px-3 border-b border-slate-500 mx-auto w-full max-w-3xl text-base">
+          <div className="flex  gap-5 text-gray-500 text-2xl">
+            {post && <>
+            {console.log(postUser)}
+            <img
+              className={`h-12 w-12 object-cover rounded-[3px] ${
+                theme === "light"
+                  ? `shadow-[0_6px_12px_rgba(0,0,0,0.375)]`
+                  : `shadow-[0_6px_12px_rgba(255,255,255,0.375)]`
+              }`}
+              src={postUser.profilePicture}
+              alt=""
+            />
+            <Link
+              to={`/wall/${"@"+postUser.username}`}
+              state={{id: post.userId,
+                name: postUser.username}}
+              className="text-[1.85rem] leading-[1.3rem] text-cyan-600 hover:underline"
+            >
+              @{postUser.username}
+            </Link></>}
+          </div>
+
+          <span className="ml-3 leading-[1.9rem]">
             {post &&
               new Date(post.createdAt).toLocaleDateString() +
                 " (" +
                 multiFormatDateString(post.createdAt) +
                 ")"}
           </span>
-          <span className="italic ml-auto">
+          <span className="italic ml-auto leading-[1.9rem]">
             {post && (post.content.length / 1000).toFixed(0)} mins read
           </span>
         </div>
@@ -227,7 +260,13 @@ export default function PostPage() {
             ) : (
               <img
                 src={
-                  isSaved ? (theme === "light" ?"/assets/icons/saved.svg":"/assets/icons/saved-dark.svg") : (theme === "light" ?"/assets/icons/save.svg":"/assets/icons/save-dark.svg")
+                  isSaved
+                    ? theme === "light"
+                      ? "/assets/icons/saved.svg"
+                      : "/assets/icons/saved-dark.svg"
+                    : theme === "light"
+                    ? "/assets/icons/save.svg"
+                    : "/assets/icons/save-dark.svg"
                 }
                 alt="share"
                 width={30}

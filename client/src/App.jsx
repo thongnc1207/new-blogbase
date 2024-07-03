@@ -5,6 +5,7 @@ import SignIn from './pages/SignIn';
 import Dashboard from './pages/Dashboard';
 import Projects from './pages/Projects';
 import SignUp from './pages/SignUp';
+import UserWall from './pages/UserWall';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import PrivateRoute from './components/PrivateRoute';
@@ -38,6 +39,7 @@ export default function App() {
 
         <Route path='/projects' element={<Projects />} />
         <Route path='/post/:postSlug' element={<PostPage />} />
+        <Route path='/wall/:username' element={<UserWall />} />
       </Routes>
       <Footer />
     </BrowserRouter>
