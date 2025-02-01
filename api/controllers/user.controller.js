@@ -168,3 +168,41 @@ export const addFavorite = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getFollowing = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) {
+      return next(errorHandler(404, 'User not found'));
+    }
+    const { following, ...rest } = user._doc;
+    const followings = await User.find({_id: { $in : following}})
+    const usersWithoutPassword = followings.map((user) => {
+      const { password, ...rest } = user._doc;
+      return rest;
+    });
+    res.status(200).json(usersWithoutPassword);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const addFollowing = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return next(errorHandler(404, 'User not found'));
+    }
+    const followingIndex = user.following.indexOf(req.params.userId);
+    if (followingIndex === -1) {
+      user.following.push(req.params.userId);
+    } else {
+      user.following.splice(postIndex, 1);
+    }
+    await user.save();
+    const { password, ...rest } = user._doc;
+    res.status(200).json(rest);
+  } catch (error) {
+    next(error);
+  }
+};

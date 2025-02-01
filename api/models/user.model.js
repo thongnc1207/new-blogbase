@@ -28,6 +28,14 @@ const userSchema = new mongoose.Schema(
     favorite: {
       type: Array,
       default: [],
+    },
+    following: {
+      type: Array,
+      default: [],
+    },
+    follower: {
+      type: Array,
+      default: [],
     }
   },
   { timestamps: true }

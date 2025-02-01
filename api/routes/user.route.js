@@ -7,7 +7,9 @@ import {
   test,
   updateUser,
   getFavorite,
-  addFavorite
+  addFavorite,
+  getFollowing,
+  addFollowing
 } from '../controllers/user.controller.js';
 import { verifyToken } from '../utils/verifyUser.js';
 
@@ -21,5 +23,7 @@ router.get('/getusers', verifyToken, getUsers);
 router.get('/:userId', getUser);
 router.get('/favorite/:userId', getFavorite);
 router.put('/save/:postId', verifyToken, addFavorite);
+router.get('/getfollowing/:userId', getFollowing);
+router.put('/follow/:userId', verifyToken, addFollowing);
 
 export default router;

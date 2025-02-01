@@ -224,9 +224,9 @@ export default function PostPage() {
               alt=""
             />
             <Link
-              to={`/wall/${"@"+postUser.username}`}
-              state={{id: post.userId,
-                name: postUser.username}}
+              to={`/wall/${post.userId}`}
+              // state={{id: post.userId,
+              //   name: postUser.username}}
               className="text-[1.85rem] leading-[1.3rem] text-cyan-600 hover:underline"
             >
               @{postUser.username}

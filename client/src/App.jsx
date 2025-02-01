@@ -39,7 +39,7 @@ export default function App() {
 
         <Route path='/projects' element={<Projects />} />
         <Route path='/post/:postSlug' element={<PostPage />} />
-        <Route path='/wall/:username' element={<UserWall />} />
+        <Route path='/wall/:userId' element={<UserWall />} />
       </Routes>
       <Footer />
     </BrowserRouter>

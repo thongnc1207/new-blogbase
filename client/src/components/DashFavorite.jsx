@@ -11,7 +11,7 @@ export default function DashFavorite() {
       try {
         const res = await fetch(`/api/user/favorite/${currentUser._id}`);
         const data = await res.json();
-        console.log("data: " + data);
+        console.log(data);
         if (res.ok) {
           setFavorite(data);
         }
